@@ -2,7 +2,8 @@
   "name": "@kazekyo/automerge-spider",
   "version": "0.0.2",
   "description": "",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepare": "npm run build",
@@ -21,7 +22,6 @@
   "dependencies": {
     "automerge": "^0.14.1",
     "ioredis": "^4.17.3",
-    "typescript": "^3.9.7",
     "uuid": "^8.2.0"
   },
   "devDependencies": {
@@ -35,6 +35,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "jest": "^26.1.0",
     "prettier": "^2.0.5",
-    "ts-jest": "^26.1.3"
+    "ts-jest": "^26.1.3",
+    "typescript": "^3.9.7"
   }
 }
