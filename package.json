@@ -5,6 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prepare": "npm run build",
     "test": "jest"
   },
   "repository": {
@@ -17,9 +18,6 @@
     "url": "https://github.com/kazekyo/automerge-spider/issues"
   },
   "homepage": "https://github.com/kazekyo/automerge-spider#readme",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "dependencies": {
     "automerge": "^0.14.1",
     "ioredis": "^4.17.3",
