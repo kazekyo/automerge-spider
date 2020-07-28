@@ -1,5 +1,5 @@
 {
-  "name": "automerge-spider",
+  "name": "@kazekyo/automerge-spider",
   "version": "0.0.1",
   "description": "",
   "main": "index.ts",
@@ -17,6 +17,9 @@
     "url": "https://github.com/kazekyo/automerge-spider/issues"
   },
   "homepage": "https://github.com/kazekyo/automerge-spider#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "dependencies": {
     "automerge": "^0.14.1",
     "ioredis": "^4.17.3",
