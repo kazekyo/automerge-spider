@@ -169,6 +169,11 @@ export class AutomergeSpider<T = unknown> {
     return this.docSetMap[docId]?.getDoc(docId);
   }
 
+  public disconnectRedis(): void {
+    this.redisClient.disconnect();
+    this.redisSubscriber.disconnect();
+  }
+
   private addDocSet({ docId, doc }: { docId: string; doc: FreezeObject<T> }): DocSet<T> {
     const newDocSet = new DocSet<T>();
     newDocSet.setDoc(docId, doc);

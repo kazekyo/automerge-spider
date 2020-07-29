@@ -11,6 +11,10 @@ export class Timer {
 
 export const cloneDoc = <T>(doc: FreezeObject<T>): FreezeObject<T> => load(save(doc));
 
+export type TestSetResult<T> = {
+  server: { spider: AutomergeSpider };
+  client: { connection: Connection<T>; docSet: DocSet<T> };
+};
 export const generateTestSet = async <T>({
   clientId,
   redisOption,
@@ -21,7 +25,7 @@ export const generateTestSet = async <T>({
   redisOption: { host: string; port?: number; namespace?: string };
   docId: string;
   doc: FreezeObject<T>;
-}): Promise<{ server: { spider: AutomergeSpider }; client: { connection: Connection<T>; docSet: DocSet<T> } }> => {
+}): Promise<TestSetResult<T>> => {
   const spider = new AutomergeSpider({ redis: redisOption, loadDoc: async () => Promise.resolve(cloneDoc(doc)) });
   const clientDocSet = new DocSet<T>();
   clientDocSet.setDoc(docId, cloneDoc(doc));
