@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: node:alpine
     services:
       redis:
         image: redis:alpine
@@ -19,12 +20,12 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '12'
-      - run: npm install
-      - run: npm test
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm ci
+      - name: Test
+        run: npm test
         env:
           REDIS_HOST: redis
           REDIS_PORT: 6379
