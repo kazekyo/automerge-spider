@@ -46,7 +46,7 @@ describe('AutomergeSpider', () => {
           await Timer.wait(200);
           expect(JSON.stringify(testSet2.client.docSet.getDoc(docId))).toBe(JSON.stringify({ text: '1 changed' }));
 
-          testSet2.server.spider.removeClientDependInDoc({ clientId: 'clientId2', docId });
+          await testSet2.server.spider.removeClientDependInDoc({ clientId: 'clientId2', docId });
           changeClientDoc({ docId, docSet: testSet1.client.docSet, connection: testSet1.client.connection }, (doc) => {
             doc.text = new Text('2 changed');
           });

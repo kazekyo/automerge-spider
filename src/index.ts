@@ -62,38 +62,44 @@ export class AutomergeSpider<T = unknown> {
 
     this.setNodeKeepAliveInterval();
     this.setOtherNodesGCInterval();
+  }
 
-    const myDataTransferChannel = this.dataTransferChannel({
-      nodeId: this.myNodeId,
-    });
+  public async joinNodeNetwork(): Promise<void> {
+    const referencingDocStatusChannel = this.referencingDocStatusChannel();
+    const myDataTransferChannel = this.dataTransferChannel({ nodeId: this.myNodeId });
     this.redisSubscriber.on('message', (channel: string, message: string) => {
-      if (channel === myDataTransferChannel) {
+      if (channel === referencingDocStatusChannel) {
+        this.receiveReferencingDocStatusMessage({ message }).catch((error) => {
+          throw error;
+        });
+      } else if (channel === myDataTransferChannel) {
         this.receiveDataFromOtherNode({ messageString: message });
       }
     });
-    this.redisSubscriber.subscribe(this.dataTransferChannel({ nodeId: this.myNodeId }));
-
-    const referencingDocStatusChannel = this.referencingDocStatusChannel();
-    this.redisSubscriber.on('message', (channel: string, message: string) => {
-      if (channel === referencingDocStatusChannel) {
-        this.receiveReferencingDocStatusMessage({ message });
-      }
-    });
-    this.redisSubscriber.subscribe(referencingDocStatusChannel);
+    await this.redisSubscriber.subscribe(this.dataTransferChannel({ nodeId: this.myNodeId }));
+    await this.redisSubscriber.subscribe(referencingDocStatusChannel);
   }
 
   private setNodeKeepAliveInterval(): void {
     setInterval(() => {
       const key = this.nodeKey({ nodeId: this.myNodeId });
-      this.redisClient.set(key, '1');
-      this.redisClient.expire(key, SERVER_EXPIRE_INTERVAL);
+      this.redisClient.set(key, '1').catch((error) => {
+        throw error;
+      });
+      this.redisClient.expire(key, SERVER_EXPIRE_INTERVAL).catch((error) => {
+        throw error;
+      });
     }, SERVER_KEEP_ALIVE_INTERVAL);
   }
 
   private setOtherNodesGCInterval(): void {
     setInterval(() => {
-      this.deleteGarbageNodeKeys();
-      this.deleteGarbageNodeConnections();
+      this.deleteGarbageNodeKeys().catch((error) => {
+        throw error;
+      });
+      this.deleteGarbageNodeConnections().catch((error) => {
+        throw error;
+      });
     }, SERVER_DELETE_CHECK_INTERVAL);
   }
 
@@ -121,7 +127,7 @@ export class AutomergeSpider<T = unknown> {
 
     newConnection.open();
 
-    this.redisClient.publish(
+    await this.redisClient.publish(
       this.referencingDocStatusChannel(),
       this.generateReferencingDocStatusMessage({
         fromNodeId: this.myNodeId,
@@ -132,7 +138,7 @@ export class AutomergeSpider<T = unknown> {
     return;
   }
 
-  public removeClientDependInDoc({ clientId, docId }: { clientId: string; docId: string }): void {
+  public async removeClientDependInDoc({ clientId, docId }: { clientId: string; docId: string }): Promise<void> {
     const clientConnection = this.clientConnectionMap[clientId];
     clientConnection && clientConnection.close();
 
@@ -146,7 +152,7 @@ export class AutomergeSpider<T = unknown> {
         this.removeNodeConnection({ nodeId, docId });
       });
 
-      this.redisClient.publish(
+      await this.redisClient.publish(
         this.referencingDocStatusChannel(),
         this.generateReferencingDocStatusMessage({
           fromNodeId: this.myNodeId,
@@ -195,7 +201,9 @@ export class AutomergeSpider<T = unknown> {
     if (!docSet) return;
 
     const newConnection = new Connection(docSet, (message: Message) => {
-      this.sendDataToOtherNode({ nodeId, docId, message });
+      this.sendDataToOtherNode({ nodeId, docId, message }).catch((error) => {
+        throw error;
+      });
     });
     connectionMap[docId] = newConnection;
     this.nodeConnectionMap[nodeId] = connectionMap;
@@ -228,7 +236,7 @@ export class AutomergeSpider<T = unknown> {
     return !!connectionMap[docId];
   }
 
-  private receiveReferencingDocStatusMessage({ message }: { message: string }): void {
+  private async receiveReferencingDocStatusMessage({ message }: { message: string }): Promise<void> {
     const { fromNodeId, docId, status } = this.parseReferencingDocStatusMessage({ message });
     if (status === ReferencingDocStatus.ON) {
       if (fromNodeId === this.myNodeId) return;
@@ -237,7 +245,7 @@ export class AutomergeSpider<T = unknown> {
 
       this.addNodeConnection({ nodeId: fromNodeId, docId: docId });
 
-      this.redisClient.publish(
+      await this.redisClient.publish(
         this.referencingDocStatusChannel(),
         this.generateReferencingDocStatusMessage({
           fromNodeId: this.myNodeId,
@@ -250,7 +258,15 @@ export class AutomergeSpider<T = unknown> {
     }
   }
 
-  private sendDataToOtherNode({ nodeId, docId, message }: { nodeId: string; docId: string; message: Message }): void {
+  private async sendDataToOtherNode({
+    nodeId,
+    docId,
+    message,
+  }: {
+    nodeId: string;
+    docId: string;
+    message: Message;
+  }): Promise<void> {
     const msgString = this.generateDataTransferMessage({
       docId,
       message,
@@ -261,7 +277,7 @@ export class AutomergeSpider<T = unknown> {
     const connectionMap = this.nodeConnectionMap[nodeId];
     if (!connectionMap) return;
 
-    this.redisClient.publish(channel, msgString);
+    await this.redisClient.publish(channel, msgString);
   }
 
   private receiveDataFromOtherNode({ messageString }: { messageString: string }): void {
@@ -305,7 +321,7 @@ export class AutomergeSpider<T = unknown> {
       nodeKeys.map(async (value) => {
         const ttl = await this.redisClient.ttl(value);
         if (ttl <= 0 || !ttl) {
-          this.redisClient.del(value);
+          await this.redisClient.del(value);
         }
       }),
     );

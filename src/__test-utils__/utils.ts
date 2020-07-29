@@ -27,6 +27,7 @@ export const generateTestSet = async <T>({
   doc: FreezeObject<T>;
 }): Promise<TestSetResult<T>> => {
   const spider = new AutomergeSpider({ redis: redisOption, loadDoc: async () => Promise.resolve(cloneDoc(doc)) });
+  await spider.joinNodeNetwork();
   const clientDocSet = new DocSet<T>();
   clientDocSet.setDoc(docId, cloneDoc(doc));
   const clientConnection = new Connection(clientDocSet, (message: Message) =>
