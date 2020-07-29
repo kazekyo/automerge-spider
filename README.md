@@ -15,7 +15,7 @@ npm install @kazekyo/automerge-spider
 At client side, [Automerge.Connection](https://github.com/automerge/automerge#sending-and-receiving-changes) is used. At server side, Automerge-Spider is used in place of Automerge.Connection.
 
 First, you create Automerge-Spider on server and keep the instance.
-This server join the network of servers after call `joinNodeNetwork()` .
+This server joins the network of servers after call `joinNodeNetwork()` .
 ```
 this.spider = new AutomergeSpider({
   redis: { host: '0.0.0.0', port: 6379 },
