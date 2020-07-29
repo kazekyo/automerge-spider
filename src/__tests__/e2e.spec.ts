@@ -4,7 +4,12 @@ import { changeClientDoc, cloneDoc, DocType, generateTestSet, Timer } from '../_
 
 describe('AutomergeSpider', () => {
   describe('e2e', () => {
-    const redisOption = { host: '0.0.0.0', port: 6380, namespace: 'Test' };
+    const redisPort = process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6380;
+    const redisOption = {
+      host: process.env.REDIS_HOST || '0.0.0.0',
+      port: redisPort,
+      namespace: 'Test',
+    };
 
     const docId = 'docId';
 
