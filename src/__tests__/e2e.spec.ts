@@ -15,10 +15,11 @@ describe('AutomergeSpider', () => {
 
       beforeEach(async () => {
         const doc = from({ text: new Text('first') });
-        const testSet1 = generateTestSet({ clientId: 'clientId1', redisOption, docId, doc: cloneDoc(doc) });
+        const testSet1 = await generateTestSet({ clientId: 'clientId1', redisOption, docId, doc: cloneDoc(doc) });
         client1 = testSet1.client;
+        await Timer.wait(100);
 
-        const testSet2 = generateTestSet({ clientId: 'clientId2', redisOption, docId, doc: cloneDoc(doc) });
+        const testSet2 = await generateTestSet({ clientId: 'clientId2', redisOption, docId, doc: cloneDoc(doc) });
         client2 = testSet2.client;
         server2 = testSet2.server;
 
@@ -29,7 +30,7 @@ describe('AutomergeSpider', () => {
         changeClientDoc({ docId, docSet: client1.docSet, connection: client1.connection }, (doc) => {
           doc.text = new Text('changed');
         });
-        await Timer.wait(100);
+        await Timer.wait(200);
 
         expect(JSON.stringify(client2.docSet.getDoc(docId))).toBe(JSON.stringify({ text: 'changed' }));
       });

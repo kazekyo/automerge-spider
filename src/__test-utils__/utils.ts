@@ -11,7 +11,7 @@ export class Timer {
 
 export const cloneDoc = <T>(doc: FreezeObject<T>): FreezeObject<T> => load(save(doc));
 
-export const generateTestSet = <T>({
+export const generateTestSet = async <T>({
   clientId,
   redisOption,
   docId,
@@ -21,14 +21,18 @@ export const generateTestSet = <T>({
   redisOption: { host: string; port?: number; namespace?: string };
   docId: string;
   doc: FreezeObject<T>;
-}): { server: { spider: AutomergeSpider }; client: { connection: Connection<T>; docSet: DocSet<T> } } => {
+}): Promise<{ server: { spider: AutomergeSpider }; client: { connection: Connection<T>; docSet: DocSet<T> } }> => {
   const spider = new AutomergeSpider({ redis: redisOption, loadDoc: async () => Promise.resolve(cloneDoc(doc)) });
   const clientDocSet = new DocSet<T>();
   clientDocSet.setDoc(docId, cloneDoc(doc));
   const clientConnection = new Connection(clientDocSet, (message: Message) =>
     spider.receiveMessage({ clientId, message }),
   );
-  spider.addClientDependInDoc({ clientId, docId, sendMessage: (message) => clientConnection.receiveMsg(message) });
+  await spider.addClientDependInDoc({
+    clientId,
+    docId,
+    sendMessage: (message) => clientConnection.receiveMsg(message),
+  });
 
   return { server: { spider }, client: { connection: clientConnection, docSet: clientDocSet } };
 };
