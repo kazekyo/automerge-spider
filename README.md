@@ -3,6 +3,7 @@ Automerge-Spider is a library to enable scaling of servers when using [Automerge
 
 If you are using Automerge on client/server model, Automerge-Spider allows servers to share document changes with each other in real-time via Redis.
 Even if the clients are connected to different servers, clients can see the changes they have made to each other.
+
 For example, Autoemrge-Spider can be used in implementations such as collaborative editing where the client and server communicate in real-time.
 
 ## Getting Started
