@@ -42,9 +42,9 @@ When the server receives a message from the client, call `receiveMessage()`.
 this.spider.receiveMessage({ clientId: client.id, message: msg });
 ```
 
-When the client leaves the server, call `removeClientDependInDoc()`.
+When the client leaves the server, call `removeClient()`.
 ```ts
-this.spider.removeClientDependInDoc({ clientId: client.id, docId });
+this.spider.removeClient({ clientId: client.id, docId });
 ```
 
 
