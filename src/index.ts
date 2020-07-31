@@ -103,7 +103,7 @@ export class AutomergeSpider<T = unknown> {
     }, SERVER_DELETE_CHECK_INTERVAL);
   }
 
-  public async addClientDependInDoc({
+  public async addClient({
     clientId,
     docId,
     sendMessage,
@@ -138,7 +138,7 @@ export class AutomergeSpider<T = unknown> {
     return;
   }
 
-  public async removeClientDependInDoc({ clientId, docId }: { clientId: string; docId: string }): Promise<void> {
+  public async removeClient({ clientId, docId }: { clientId: string; docId: string }): Promise<void> {
     const clientConnection = this.clientConnectionMap[clientId];
     clientConnection && clientConnection.close();
 

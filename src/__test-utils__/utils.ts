@@ -36,7 +36,7 @@ export const generateTestSet = async <T>({
   const clientConnection = new Connection(clientDocSet, (message: Message) =>
     spider.receiveMessage({ clientId, message }),
   );
-  await spider.addClientDependInDoc({
+  await spider.addClient({
     clientId,
     docId,
     sendMessage: (message) => clientConnection.receiveMsg(message),

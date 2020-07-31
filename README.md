@@ -27,14 +27,15 @@ this.spider = new AutomergeSpider({
 await this.spider.joinNodeNetwork();
 ```
 
-When the server finds a client, call `addClientDependInDoc()` instead of creating Automerge.Connection.
+When the server finds a client, call `addClient()` instead of creating Automerge.Connection.
 ```ts
-await this.spider.addClientDependInDoc({
+await this.spider.addClient({
   clientId: client.id,
   docId,
   sendMessage: (msg) => client.emit('message', msg),
 });
 ```
+Currently, only one doc can be linked to one client. If you want to link multiple docs to one client, write `clientId` as `${clientId}-${docId}`.
 
 When the server receives a message from the client, call `receiveMessage()`.
 ```ts
