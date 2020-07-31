@@ -44,7 +44,7 @@ this.spider.receiveMessage({ clientId: client.id, message: msg });
 
 When the client leaves the server, call `removeClient()`.
 ```ts
-this.spider.removeClient({ clientId: client.id, docId });
+await this.spider.removeClient({ clientId: client.id, docId });
 ```
 
 
