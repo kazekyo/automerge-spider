@@ -44,7 +44,7 @@ this.spider.receiveMessage({ clientId: client.id, message: msg });
 
 When the client leaves the server, call `removeClientDependInDoc()`.
 ```ts
-this.spider.removeClientDependInDoc({ clientId: 'clientId2', docId });
+this.spider.removeClientDependInDoc({ clientId: client.id, docId });
 ```
 
 
