@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.0.1
+Update dependencies
+
 ## v1.0.0
 Stable version
 
